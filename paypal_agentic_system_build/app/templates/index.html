@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PayPal Agentic System</title>
+  <style>
+    body{font-family:Arial,sans-serif;background:#f4f7fb;margin:0;color:#172033}
+    .wrap{max-width:950px;margin:40px auto;padding:0 20px}
+    .card{background:white;border-radius:14px;padding:24px;margin-bottom:18px;box-shadow:0 4px 18px #00000012}
+    h1{margin-top:0}.badge{display:inline-block;padding:6px 10px;border-radius:20px;background:#e8f7ee;color:#137a3a;font-size:13px}
+    textarea{width:100%;min-height:120px;padding:12px;border:1px solid #ccd4df;border-radius:8px;box-sizing:border-box;font-size:15px}
+    button{margin-top:12px;padding:11px 18px;border:0;border-radius:8px;background:#1264a3;color:white;font-size:15px;cursor:pointer}
+    button:disabled{opacity:.6}.result{white-space:pre-wrap;background:#f7f9fc;padding:16px;border-radius:8px;min-height:80px}
+    code{background:#eef2f7;padding:3px 6px;border-radius:4px}.links a{margin-right:18px}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card">
+    <h1>PayPal Agentic System</h1>
+    <span class="badge">FastAPI Web Interface</span>
+    <p>Enter a natural-language request for the agentic workflow.</p>
+    <div class="links">
+      <a href="/docs" target="_blank">FastAPI Swagger Docs</a>
+      <a href="/redoc" target="_blank">ReDoc</a>
+      <a href="/health" target="_blank">Health Check</a>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Ask the Agent</h2>
+    <textarea id="request" placeholder="Example: What tools are available for managing invoices?"></textarea>
+    <button id="send" onclick="askAgent()">Run Agent</button>
+    <h3>Response</h3>
+    <div id="result" class="result">Waiting for a request...</div>
+  </div>
+</div>
+<script>
+async function askAgent(){
+  const text=document.getElementById('request').value.trim();
+  const result=document.getElementById('result');
+  const button=document.getElementById('send');
+  if(!text){result.textContent='Please enter a request.';return;}
+  button.disabled=true; result.textContent='Running agent...';
+  try{
+    const r=await fetch('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({request:text})});
+    const data=await r.json();
+    result.textContent=JSON.stringify(data,null,2);
+  }catch(e){result.textContent='Error: '+e.message;}
+  finally{button.disabled=false;}
+}
+</script>
+</body>
+</html>
